@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/navigation_day"
+            android:checked="true"
+            android:icon="@drawable/ic_view_day_grey600_24dp"
+            android:title="@string/navigation_item_day" />
+        <item
+            android:id="@+id/navigation_week"
+            android:icon="@drawable/ic_view_week_grey600_24dp"
+            android:title="@string/navigation_item_week" />
+    </group>
+</menu>
