@@ -10,9 +10,14 @@ import tr.xip.rireki.R
 
 import kotlinx.android.synthetic.main.fragment_day.*
 import tr.xip.rireki.ext.setToolbar
+import tr.xip.rireki.ext.shiftDown
+import tr.xip.rireki.ext.toSimpleDate
+import tr.xip.rireki.ext.toTimestamp
 
 import tr.xip.rireki.ui.adapter.DayListFragmentPagerAdapter
 import tr.xip.rireki.ui.adapter.OnPageChangeListenerAdapter
+import java.text.SimpleDateFormat
+import java.util.*
 
 class DayFragment : Fragment() {
 
@@ -25,5 +30,47 @@ class DayFragment : Fragment() {
 
         val adapter = DayListFragmentPagerAdapter(pager, fragmentManager)
         pager.adapter = adapter
+
+        pager.addOnPageChangeListener(object : OnPageChangeListenerAdapter() {
+            override fun onPageSelected(position: Int) = notifyPageSelected(position)
+        })
+
+        nextDay.setOnClickListener {
+            if (pager.currentItem != 0) pager.currentItem--
+        }
+        nextDay.setOnLongClickListener {
+            val dataset = adapter.dataset
+            pager.currentItem = 0
+            for (i in dataset.indices) {
+                if (i > 1) dataset.removeAt(dataset.size - 1)
+            }
+            adapter.notifyDataSetChanged()
+            true
+        }
+
+        previousDay.setOnClickListener {
+            pager.currentItem++
+        }
+
+        notifyPageSelected(0)
+    }
+
+    private fun notifyPageSelected(position: Int) {
+        nextDay.visibility = if (position == 0) View.INVISIBLE else View.VISIBLE
+
+        val date = (pager.adapter as DayListFragmentPagerAdapter).dataset[position].date
+
+        when (date) {
+            Calendar.getInstance().toSimpleDate() -> {
+                dateTextView.text = getString(R.string.today)
+            }
+            Calendar.getInstance().toSimpleDate().shiftDown(1) -> {
+                dateTextView.text = getString(R.string.yesterday)
+            }
+            else -> {
+                val format = SimpleDateFormat("d MMMM y")
+                dateTextView.text = format.format(date.toTimestamp())
+            }
+        }
     }
 }

@@ -2,7 +2,7 @@ package tr.xip.rireki.ui.adapter
 
 import android.support.v4.view.ViewPager
 
-abstract class OnPageChangeListenerAdapter : ViewPager.OnPageChangeListener {
+abstract class OnPageChangeListenerAdapter() : ViewPager.OnPageChangeListener {
 
     override fun onPageSelected(position: Int) {}
 

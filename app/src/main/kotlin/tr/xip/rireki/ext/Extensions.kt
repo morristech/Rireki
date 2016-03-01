@@ -24,3 +24,12 @@ fun AppCompatActivity.setToolbar(toolbar: Toolbar) {
  * Checks whether the [TextView] is truly empty
  */
 fun TextView.isEmpty(): Boolean = text.trim().length <= 0
+
+/**
+ * Returns a Calendar object from a timestamp
+ */
+fun Long.toCalendar(): Calendar {
+    val calendar = Calendar.getInstance()
+    calendar.timeInMillis = this
+    return calendar
+}

@@ -3,6 +3,7 @@ package tr.xip.rireki.ui.dialog
 
 import android.app.DatePickerDialog
 import android.content.Context
+import android.os.Environment
 import android.support.v7.app.AppCompatActivity
 import android.widget.ArrayAdapter
 import com.afollestad.materialdialogs.MaterialDialog
@@ -12,16 +13,13 @@ import tr.xip.rireki.R
 
 import kotlinx.android.synthetic.main.dialog_new_record.view.*
 import tr.xip.rireki.broadcast.RecordInRealmUpdateBroadcast
-import tr.xip.rireki.ext.isEmpty
+import tr.xip.rireki.ext.*
 import tr.xip.rireki.model.Record
 import tr.xip.rireki.model.RecordTitle
 import tr.xip.rireki.model.RecordUnit
+import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
-
-import tr.xip.rireki.ext.toSimpleDate
-import tr.xip.rireki.ext.toStringArray
-import tr.xip.rireki.ext.toTimestamp
 
 class NewRecordDialog {
     var context: Context? = null
@@ -62,8 +60,10 @@ class NewRecordDialog {
         view.date.text = SimpleDateFormat("d MMMM y").format(System.currentTimeMillis())
         view.date.setOnClickListener {
             DatePickerDialogFragment(DatePickerDialog.OnDateSetListener { datePicker, year, month, day ->
-                date = Date(year - 1900, month, day).time
-                view.date.text = SimpleDateFormat("d MMMM y").format(Date(year - 1900, month, day));
+                val cal = Calendar.getInstance().toSimpleDate()
+                cal.set(year, month, day)
+                date = cal.toTimestamp()
+                view.date.text = SimpleDateFormat("d MMMM y").format(date);
             }).show(activity.supportFragmentManager, "date_picker_dialog_fragment")
         }
 
@@ -71,7 +71,7 @@ class NewRecordDialog {
     }
 
     private fun addRecord(dialog: MaterialDialog) {
-        if (!checkFieldValidity(dialog)) return
+        if (!validateFields(dialog)) return
 
         realm.beginTransaction()
 
@@ -88,7 +88,7 @@ class NewRecordDialog {
         dialog.dismiss()
     }
 
-    private fun checkFieldValidity(dialog: MaterialDialog): Boolean {
+    private fun validateFields(dialog: MaterialDialog): Boolean {
         var result = true
         val view = dialog.customView!!
         if (view.title.isEmpty()) {

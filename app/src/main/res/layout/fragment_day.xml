@@ -26,7 +26,7 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:id="@+id/previousDay"
+                android:id="@+id/nextDay"
                 style="@style/DaySwitchButton"
                 android:src="@drawable/ic_chevron_left_white_24dp" />
 
@@ -41,7 +41,7 @@
                 tools:text="Today" />
 
             <ImageView
-                android:id="@+id/nextDay"
+                android:id="@+id/previousDay"
                 style="@style/DaySwitchButton"
                 android:src="@drawable/ic_chevron_right_white_24dp" />
         </LinearLayout>

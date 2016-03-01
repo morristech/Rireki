@@ -4,16 +4,13 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.app.Fragment
-import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import tr.xip.rireki.R
 
 import tr.xip.rireki.ui.dialog.NewRecordDialog
 import tr.xip.rireki.ui.fragment.DayFragment
-import tr.xip.rireki.ui.fragment.DayListFragment
 import tr.xip.rireki.ui.fragment.WeekFragment
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -42,11 +39,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         when (item.itemId) {
             android.R.id.home -> {
                 drawerLayout.openDrawer(drawer)
-                return false
             }
-            R.id.action_settings -> return false
-            else -> return super.onOptionsItemSelected(item)
+            R.id.action_settings -> {
+                /* empty */
+            }
         }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {

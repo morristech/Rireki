@@ -2,8 +2,8 @@ package tr.xip.rireki.ui.fragment
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,23 +14,22 @@ import tr.xip.rireki.R
 import kotlinx.android.synthetic.main.fragment_day_list.*
 import tr.xip.rireki.broadcast.RecordInRealmUpdateBroadcast
 import tr.xip.rireki.ext.setDisplayedChildSafe
+import tr.xip.rireki.ext.toCalendar
 import tr.xip.rireki.ext.toSimpleDate
 import tr.xip.rireki.ext.toTimestamp
 import tr.xip.rireki.model.Record
 import tr.xip.rireki.ui.adapter.DayRecordsAdapter
 import tr.xip.rireki.ui.widget.DividerItemDecoration
+import java.text.SimpleDateFormat
 import java.util.*
 
 class DayListFragment() : Fragment(), RecordInRealmUpdateBroadcast.Callback {
-    private val flipperRecyclerPosition = 0
-    private val flipperNoRecordsPosition = 1
-
     var date: Calendar = Calendar.getInstance().toSimpleDate()
 
     private val updateBroadcastReceiver = RecordInRealmUpdateBroadcast(this)
 
-    constructor(date: Calendar) : this() {
-        this.date = date
+    constructor(date: Long) : this() {
+        this.date = date.toCalendar()
     }
 
     override fun onResume() {
@@ -43,11 +42,15 @@ class DayListFragment() : Fragment(), RecordInRealmUpdateBroadcast.Callback {
         updateBroadcastReceiver.unregisterReceiver(context)
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater?.inflate(R.layout.fragment_day_list, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        return inflater.inflate(R.layout.fragment_day_list, container, false)
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        if (savedInstanceState != null) {
+            date = savedInstanceState.getSerializable("date") as Calendar
+        }
+
         val manager = LinearLayoutManager(context)
         recycler.layoutManager = manager
         recycler.addItemDecoration(DividerItemDecoration(context))
@@ -59,10 +62,19 @@ class DayListFragment() : Fragment(), RecordInRealmUpdateBroadcast.Callback {
         val dataset = Realm.getDefaultInstance().where(Record::class.java).equalTo("date", date.toTimestamp()).findAll()
         recycler.adapter = AlphaInAnimationAdapter(DayRecordsAdapter(dataset))
 
-        flipper.setDisplayedChildSafe(if (dataset.size == 0) flipperNoRecordsPosition else flipperRecyclerPosition)
+        flipper.setDisplayedChildSafe(if (dataset.size == 0) FLIPPER_POSITION_NO_RECORDS else FLIPPER_POSITION_RECYCLER)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putSerializable("date", date)
     }
 
     override fun onRecordInRealmUpdate() {
         loadRecords()
+    }
+
+    companion object {
+        val FLIPPER_POSITION_RECYCLER = 0
+        val FLIPPER_POSITION_NO_RECORDS = 1
     }
 }

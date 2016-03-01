@@ -4,57 +4,38 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentStatePagerAdapter
 import android.support.v4.view.ViewPager
-import android.widget.Toast
 import tr.xip.rireki.ext.shiftDown
 import tr.xip.rireki.ext.toSimpleDate
+import tr.xip.rireki.ext.toTimestamp
 import tr.xip.rireki.ui.fragment.DayListFragment
 import java.util.*
 
 class DayListFragmentPagerAdapter(val pager: ViewPager, val fragmentManager: FragmentManager) : FragmentStatePagerAdapter(fragmentManager) {
-    var date = Calendar.getInstance().toSimpleDate()
+    var previousPosition = 0
 
     val dataset: MutableList<DayListFragment> = arrayListOf(
-            DayListFragment(Calendar.getInstance().toSimpleDate().shiftDown(1)),
-            DayListFragment(Calendar.getInstance().toSimpleDate())
+            DayListFragment(Calendar.getInstance().toSimpleDate().toTimestamp()),
+            DayListFragment(Calendar.getInstance().toSimpleDate().shiftDown(1).toTimestamp())
     )
-
-    var previousPosition = -1;
 
     init {
         pager.addOnPageChangeListener(object : OnPageChangeListenerAdapter() {
-            override fun onPageSelected(position: Int) {
-                onPageChanged(position)
-            }
+            override fun onPageSelected(position: Int) = onPageChanged(position)
         })
-
-        pager.currentItem = count - 1
     }
 
-    override fun getCount(): Int {
-        return dataset.size
-    }
+    override fun getCount(): Int = dataset.size
 
-    override fun getItem(position: Int): Fragment? {
-        return dataset[position]
-    }
+    override fun getItem(position: Int): Fragment? = dataset[position]
 
-    override fun getItemPosition(`object`: Any): Int = dataset.indexOf(`object`)
+    override fun getItemPosition(item: Any): Int = dataset.indexOf(item)
 
-    public fun onPageChanged(position: Int) {
-        if (position == 0 && previousPosition > position) {
-            val previousDate = dataset[position].date
-            dataset.add(0, DayListFragment(previousDate.shiftDown(1)))
-            notifyDataSetChanged()
-            pager.currentItem = 1
-            Toast.makeText(pager.context, "Added new page at 0 from $position", Toast.LENGTH_SHORT)
-        } else {
-            previousPosition = position;
+    private fun onPageChanged(position: Int) {
+        if (position == count - 1) {
+            dataset.add(DayListFragment(Calendar.getInstance().toSimpleDate().shiftDown(position + 1).toTimestamp()))
+            notifyDataSetChanged();
         }
 
-        12.toDp();
-    }
-
-    fun Int.toDp(): Int {
-        return this * 1 * 1 * 1 // Blah blah. Actual calculation here...
+        previousPosition = position
     }
 }

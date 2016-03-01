@@ -23,7 +23,7 @@ fun Calendar.toTimestamp(): Long = time.time
  * Shifts the current calendar instance up by [days] and returns it
  */
 fun Calendar.shiftUp(days: Int): Calendar {
-    set(Calendar.DAY_OF_MONTH, get(Calendar.DAY_OF_MONTH) + days)
+    add(Calendar.DAY_OF_YEAR, days)
     return this
 }
 
@@ -31,7 +31,7 @@ fun Calendar.shiftUp(days: Int): Calendar {
  * Shifts the current calendar instance down by [days] and returns it
  */
 fun Calendar.shiftDown(days: Int): Calendar {
-    set(Calendar.DAY_OF_MONTH, get(Calendar.DAY_OF_MONTH) - days)
+    add(Calendar.DAY_OF_YEAR, -days)
     return this
 }
 
