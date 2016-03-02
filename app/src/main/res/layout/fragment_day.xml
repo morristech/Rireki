@@ -63,5 +63,6 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
         android:src="@drawable/ic_add_white_24dp"
-        app:layout_behavior="tr.xip.rireki.ui.widget.ScrollAwareFloatingActionButtonBehavior" />
+        app:layout_behavior="tr.xip.rireki.ui.widget.ScrollAwareFloatingActionButtonBehavior"
+        app:rippleColor="@android:color/white" />
 </android.support.design.widget.CoordinatorLayout>
