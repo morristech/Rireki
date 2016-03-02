@@ -78,7 +78,8 @@ class DayFragment : Fragment() {
             }
         }
 
-        /* AppBarLayout show/hide */
+        /* AppBarLayout and FAB show/hide */
         appBarLayout.setExpanded(true, true)
+        addNewRecord.show()
     }
 }
