@@ -20,10 +20,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        addNewRecord.setOnClickListener {
-            NewRecordDialog().create(this).show()
-        }
-
         drawerLayout.setStatusBarBackground(R.color.apptheme_primary_dark)
         drawer.setNavigationItemSelectedListener(this)
 

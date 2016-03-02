@@ -16,6 +16,7 @@ import tr.xip.rireki.ext.toTimestamp
 
 import tr.xip.rireki.ui.adapter.DayListFragmentPagerAdapter
 import tr.xip.rireki.ui.adapter.OnPageChangeListenerAdapter
+import tr.xip.rireki.ui.dialog.NewRecordDialog
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -27,6 +28,10 @@ class DayFragment : Fragment() {
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         (host as AppCompatActivity).setToolbar(toolbar)
+
+        addNewRecord.setOnClickListener {
+            NewRecordDialog().create(activity as AppCompatActivity).show()
+        }
 
         val adapter = DayListFragmentPagerAdapter(pager, fragmentManager)
         pager.adapter = adapter
@@ -72,5 +77,8 @@ class DayFragment : Fragment() {
                 dateTextView.text = format.format(date.toTimestamp())
             }
         }
+
+        /* AppBarLayout show/hide */
+        appBarLayout.setExpanded(true, true)
     }
 }
