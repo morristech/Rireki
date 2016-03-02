@@ -11,8 +11,6 @@ import tr.xip.rireki.ui.fragment.DayListFragment
 import java.util.*
 
 class DayListFragmentPagerAdapter(val pager: ViewPager, val fragmentManager: FragmentManager) : FragmentStatePagerAdapter(fragmentManager) {
-    var previousPosition = 0
-
     val dataset: MutableList<DayListFragment> = arrayListOf(
             DayListFragment(Calendar.getInstance().toSimpleDate().toTimestamp()),
             DayListFragment(Calendar.getInstance().toSimpleDate().shiftDown(1).toTimestamp())
@@ -35,7 +33,5 @@ class DayListFragmentPagerAdapter(val pager: ViewPager, val fragmentManager: Fra
             dataset.add(DayListFragment(Calendar.getInstance().toSimpleDate().shiftDown(position + 1).toTimestamp()))
             notifyDataSetChanged();
         }
-
-        previousPosition = position
     }
 }
