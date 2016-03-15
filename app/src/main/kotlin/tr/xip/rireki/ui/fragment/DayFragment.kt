@@ -12,7 +12,6 @@ import tr.xip.rireki.R
 
 import kotlinx.android.synthetic.main.fragment_day.*
 import tr.xip.rireki.event.Bus
-import tr.xip.rireki.event.RecordRemovalUndoneEvent
 import tr.xip.rireki.ext.setToolbar
 import tr.xip.rireki.ext.shiftDown
 import tr.xip.rireki.ext.toSimpleDate
@@ -27,7 +26,7 @@ import tr.xip.rireki.ui.dialog.NewRecordDialog
 import java.text.SimpleDateFormat
 import java.util.*
 
-class DayFragment : Fragment(), DayRecordsAdapter.RecordRemoveSnackBarTunnel {
+class DayFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater?.inflate(R.layout.fragment_day, container, false)
@@ -88,22 +87,5 @@ class DayFragment : Fragment(), DayRecordsAdapter.RecordRemoveSnackBarTunnel {
         /* AppBarLayout and FAB show/hide */
         appBarLayout.setExpanded(true, true)
         addNewRecord.show()
-    }
-
-    override fun show(item: Record, callback: DayRecordsAdapter.RemoveSnackbarActionCallback?) {
-        var shouldRemove = true
-        val snackbar = Snackbar.make(coordinatorLayout, "Removed ${item.title}", 3000)
-        snackbar.setAction("Undo", {
-            shouldRemove = false
-            callback?.onUndo()
-        })
-        snackbar.setCallback(object : Snackbar.Callback() {
-            override fun onDismissed(snackbar: Snackbar?, event: Int) {
-                if (shouldRemove) {
-                    callback?.onRemove()
-                }
-            }
-        })
-        snackbar.show()
     }
 }

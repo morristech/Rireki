@@ -4,25 +4,18 @@ import android.support.design.widget.CoordinatorLayout
 import android.support.design.widget.Snackbar
 import android.support.v7.widget.PopupMenu
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import com.squareup.otto.Subscribe
 import io.realm.Realm
 import tr.xip.rireki.model.Record
 
 import kotlinx.android.synthetic.main.item_record.view.*
 import tr.xip.rireki.R
-import tr.xip.rireki.event.Bus
-import tr.xip.rireki.event.RecordRemovalUndoneEvent
+import tr.xip.rireki.realm.removeRecordFromRealm
 
 class DayRecordsAdapter(val dataset: MutableList<Record>, val coordinatorLayout: CoordinatorLayout) : RecyclerView.Adapter<DayRecordsAdapter.ViewHolder>() {
-
-    init {
-        Bus.register(this)
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder? {
         val v = LayoutInflater.from(parent!!.context).inflate(R.layout.item_record, parent, false)
@@ -54,10 +47,7 @@ class DayRecordsAdapter(val dataset: MutableList<Record>, val coordinatorLayout:
                     snackbar.setCallback(object : Snackbar.Callback() {
                         override fun onDismissed(snackbar: Snackbar?, event: Int) {
                             if (shouldRemove) {
-                                val realm = Realm.getDefaultInstance()
-                                realm.beginTransaction()
-                                item.removeFromRealm()
-                                realm.commitTransaction()
+                                removeRecordFromRealm(item)
                             }
                         }
                     })
@@ -73,21 +63,5 @@ class DayRecordsAdapter(val dataset: MutableList<Record>, val coordinatorLayout:
 
     override fun getItemCount(): Int = dataset.size
 
-    @Subscribe
-    fun onRemoveUndone(event: RecordRemovalUndoneEvent) {
-        Log.wtf("ASD", "Brought ${event.record.title} back!")
-
-        notifyDataSetChanged()
-    }
-
     class ViewHolder(val view: View) : RecyclerView.ViewHolder(view)
-
-    interface RecordRemoveSnackBarTunnel {
-        fun show(item: Record, callback: RemoveSnackbarActionCallback?)
-    }
-
-    abstract class RemoveSnackbarActionCallback {
-        abstract fun onUndo()
-        abstract fun onRemove()
-    }
 }

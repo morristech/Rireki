@@ -16,6 +16,7 @@ import tr.xip.rireki.R
 import kotlinx.android.synthetic.main.fragment_day_list.*
 import tr.xip.rireki.event.Bus
 import tr.xip.rireki.event.RecordAddedEvent
+import tr.xip.rireki.event.RecordRemovedEvent
 import tr.xip.rireki.ext.*
 import tr.xip.rireki.model.Record
 import tr.xip.rireki.ui.adapter.DayRecordsAdapter
@@ -62,25 +63,33 @@ class DayListFragment() : Fragment() {
         dataset.addAll(Realm.getDefaultInstance().where(Record::class.java).equalTo("date", date.toTimestamp()).findAll())
         adapter = DayRecordsAdapter(dataset, activity.coordinatorLayout)
         recycler.adapter = AlphaInAnimationAdapter(adapter)
-
-        flipper.setDisplayedChildSafe(if (dataset.size == 0) FLIPPER_POSITION_NO_RECORDS else FLIPPER_POSITION_RECYCLER)
+        notifyViewFlipper()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putSerializable("date", date)
     }
 
+    private fun notifyViewFlipper() {
+        flipper.setDisplayedChildSafe(if (adapter?.itemCount != 0) FLIPPER_POSITION_RECYCLER else FLIPPER_POSITION_NO_RECORDS )
+    }
+
     @Subscribe
     fun onRecordAddedToRealm(event: RecordAddedEvent) {
-        Toast.makeText(context, "Record added: ${event.record.title}", Toast.LENGTH_SHORT).show();
         if (adapter != null) {
             adapter!!.dataset.add(event.record)
             recycler.adapter.notifyItemInserted(adapter!!.itemCount - 1)
+            notifyViewFlipper()
         }
     }
 
+    @Subscribe
+    fun onRecordRemovedFromRealm(event: RecordRemovedEvent) {
+        notifyViewFlipper()
+    }
+
     companion object {
-        val FLIPPER_POSITION_RECYCLER = 0
-        val FLIPPER_POSITION_NO_RECORDS = 1
+        private val FLIPPER_POSITION_RECYCLER = 0
+        private val FLIPPER_POSITION_NO_RECORDS = 1
     }
 }
