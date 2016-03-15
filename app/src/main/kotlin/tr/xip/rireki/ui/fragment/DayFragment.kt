@@ -1,26 +1,33 @@
 package tr.xip.rireki.ui.fragment
 
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import io.realm.Realm
 import tr.xip.rireki.R
 
 import kotlinx.android.synthetic.main.fragment_day.*
+import tr.xip.rireki.event.Bus
+import tr.xip.rireki.event.RecordRemovalUndoneEvent
 import tr.xip.rireki.ext.setToolbar
 import tr.xip.rireki.ext.shiftDown
 import tr.xip.rireki.ext.toSimpleDate
 import tr.xip.rireki.ext.toTimestamp
+import tr.xip.rireki.model.Record
+import tr.xip.rireki.realm.saveRecordToRealm
 
 import tr.xip.rireki.ui.adapter.DayListFragmentPagerAdapter
+import tr.xip.rireki.ui.adapter.DayRecordsAdapter
 import tr.xip.rireki.ui.adapter.OnPageChangeListenerAdapter
 import tr.xip.rireki.ui.dialog.NewRecordDialog
 import java.text.SimpleDateFormat
 import java.util.*
 
-class DayFragment : Fragment() {
+class DayFragment : Fragment(), DayRecordsAdapter.RecordRemoveSnackBarTunnel {
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater?.inflate(R.layout.fragment_day, container, false)
@@ -81,5 +88,22 @@ class DayFragment : Fragment() {
         /* AppBarLayout and FAB show/hide */
         appBarLayout.setExpanded(true, true)
         addNewRecord.show()
+    }
+
+    override fun show(item: Record, callback: DayRecordsAdapter.RemoveSnackbarActionCallback?) {
+        var shouldRemove = true
+        val snackbar = Snackbar.make(coordinatorLayout, "Removed ${item.title}", 3000)
+        snackbar.setAction("Undo", {
+            shouldRemove = false
+            callback?.onUndo()
+        })
+        snackbar.setCallback(object : Snackbar.Callback() {
+            override fun onDismissed(snackbar: Snackbar?, event: Int) {
+                if (shouldRemove) {
+                    callback?.onRemove()
+                }
+            }
+        })
+        snackbar.show()
     }
 }

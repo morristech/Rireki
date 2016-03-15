@@ -1,5 +1,6 @@
 package tr.xip.rireki.ext
 
+import tr.xip.rireki.model.Record
 import tr.xip.rireki.model.RecordTitle
 import tr.xip.rireki.model.RecordUnit
 
@@ -16,4 +17,8 @@ fun <T : Any> List<T>.toStringArray(): Array<String?> {
         }
     }
     return array
+}
+
+fun Record.clone(): Record {
+    return Record(title, quantity, unit, date)
 }

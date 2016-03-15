@@ -1,9 +1,12 @@
 package tr.xip.rireki.ext
 
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import android.widget.TextView
 import android.widget.ViewFlipper
+import io.realm.RealmObject
+import io.realm.RealmResults
 import tr.xip.rireki.R
 import java.util.*
 
@@ -32,4 +35,11 @@ fun Long.toCalendar(): Calendar {
     val calendar = Calendar.getInstance()
     calendar.timeInMillis = this
     return calendar
+}
+
+fun <E : RealmObject> RealmResults<E>.realIndexOf(item: E): Int {
+    for ((index, value) in this.withIndex()) {
+        if (value.equals(item)) return index
+    }
+    return -1
 }

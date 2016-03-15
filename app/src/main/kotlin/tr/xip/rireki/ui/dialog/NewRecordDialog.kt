@@ -3,7 +3,6 @@ package tr.xip.rireki.ui.dialog
 
 import android.app.DatePickerDialog
 import android.content.Context
-import android.os.Environment
 import android.support.v7.app.AppCompatActivity
 import android.widget.ArrayAdapter
 import com.afollestad.materialdialogs.MaterialDialog
@@ -12,12 +11,13 @@ import io.realm.RealmResults
 import tr.xip.rireki.R
 
 import kotlinx.android.synthetic.main.dialog_new_record.view.*
-import tr.xip.rireki.broadcast.RecordInRealmUpdateBroadcast
+import tr.xip.rireki.event.Bus
+import tr.xip.rireki.event.RecordAddedEvent
 import tr.xip.rireki.ext.*
 import tr.xip.rireki.model.Record
 import tr.xip.rireki.model.RecordTitle
 import tr.xip.rireki.model.RecordUnit
-import java.io.*
+import tr.xip.rireki.realm.saveRecordToRealm
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -73,17 +73,12 @@ class NewRecordDialog {
     private fun addRecord(dialog: MaterialDialog) {
         if (!validateFields(dialog)) return
 
-        realm.beginTransaction()
-
-        var record = realm.createObject(Record::class.java)
-        record.title = realm.copyToRealmOrUpdate(RecordTitle(dialog.customView!!.title.text.toString()))
+        var record = Record()
+        record.title = RecordTitle(dialog.customView!!.title.text.toString())
         record.quantity = dialog.customView!!.quantity.text.toString().toInt()
-        record.unit = realm.copyToRealmOrUpdate(RecordUnit(dialog.customView!!.unit.text.toString()))
+        record.unit = RecordUnit(dialog.customView!!.unit.text.toString())
         record.date = date
-
-        realm.commitTransaction()
-
-        RecordInRealmUpdateBroadcast().send(context!!)
+        saveRecordToRealm(record)
 
         dialog.dismiss()
     }
