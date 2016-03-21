@@ -22,3 +22,14 @@ fun <T : Any> List<T>.toStringArray(): Array<String?> {
 fun Record.clone(): Record {
     return Record(title, quantity, unit, date)
 }
+
+fun List<Record>.indexByTitle(record: Record): Int {
+    var index = -1
+    for (i in this.indices) {
+        if (this[i].title?.title == record.title?.title) {
+            index = i
+            break
+        }
+    }
+    return index
+}

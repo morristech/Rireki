@@ -36,7 +36,7 @@ class DayFragment : Fragment() {
         (host as AppCompatActivity).setToolbar(toolbar)
 
         addNewRecord.setOnClickListener {
-            NewRecordDialog().create(activity as AppCompatActivity).show()
+            NewRecordDialog.new(activity as AppCompatActivity).show()
         }
 
         val adapter = DayListFragmentPagerAdapter(pager, fragmentManager)

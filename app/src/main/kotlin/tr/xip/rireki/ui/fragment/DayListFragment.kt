@@ -2,6 +2,7 @@ package tr.xip.rireki.ui.fragment
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
@@ -17,6 +18,7 @@ import kotlinx.android.synthetic.main.fragment_day_list.*
 import tr.xip.rireki.event.Bus
 import tr.xip.rireki.event.RecordAddedEvent
 import tr.xip.rireki.event.RecordRemovedEvent
+import tr.xip.rireki.event.RecordUpdatedEvent
 import tr.xip.rireki.ext.*
 import tr.xip.rireki.model.Record
 import tr.xip.rireki.ui.adapter.DayRecordsAdapter
@@ -61,7 +63,7 @@ class DayListFragment() : Fragment() {
     private fun loadRecords() {
         val dataset = mutableListOf<Record>()
         dataset.addAll(Realm.getDefaultInstance().where(Record::class.java).equalTo("date", date.toTimestamp()).findAll())
-        adapter = DayRecordsAdapter(dataset, activity.coordinatorLayout)
+        adapter = DayRecordsAdapter(activity as AppCompatActivity, dataset, activity.coordinatorLayout)
         recycler.adapter = AlphaInAnimationAdapter(adapter)
         notifyViewFlipper()
     }
@@ -86,6 +88,18 @@ class DayListFragment() : Fragment() {
     @Subscribe
     fun onRecordRemovedFromRealm(event: RecordRemovedEvent) {
         notifyViewFlipper()
+    }
+
+    @Subscribe
+    fun onRecordUpdated(event: RecordUpdatedEvent) {
+        if (adapter == null) return
+
+        val index = adapter!!.dataset.indexByTitle(event.record)
+        if (index == -1) return
+
+        adapter!!.dataset.removeAt(index)
+        adapter!!.dataset.add(index, event.record)
+        adapter!!.notifyItemChanged(index)
     }
 
     companion object {
